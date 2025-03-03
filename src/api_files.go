@@ -98,6 +98,7 @@ func FilesUpload(w http.ResponseWriter, r *http.Request) {
 		WriteUploadFileResponse(w, &UploadFileResponse{
 			Message: "File is bigger than " + strconv.Itoa(LoadedConfig.MaxUploadSize) + "MBs",
 		}, http.StatusBadRequest)
+		return
 	}
 
 	randomName := generateRandomString(8)
@@ -122,6 +123,8 @@ func FilesUpload(w http.ResponseWriter, r *http.Request) {
 
 	// After all that stupid error handling, at this point this means
 	// that the file has been saved!
+
+	log.Println("Uploaded new file:", randomName)
 
 	WriteUploadFileResponse(w, &UploadFileResponse{
 		Message:          "File uploaded!",
