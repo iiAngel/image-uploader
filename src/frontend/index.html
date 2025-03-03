@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>File Upload</title>
+	</head>
+	<body>
+		<h1>Upload File</h1>
+		<form id="uploadForm" enctype="multipart/form-data">
+			<input
+				type="file"
+				name="uploaded_file"
+				id="uploaded_file"
+				required
+			/>
+			<button type="submit">Upload</button>
+		</form>
+		<span id="upload-status"></span>
+
+		<script>
+			const uploadStatus = document.getElementById("upload-status");
+			document
+				.getElementById("uploadForm")
+				.addEventListener("submit", function (event) {
+					event.preventDefault();
+
+					const formData = new FormData();
+					const fileInput = document.getElementById("uploaded_file");
+
+					formData.append("uploaded_file", fileInput.files[0]);
+
+					const xhr = new XMLHttpRequest();
+
+					xhr.open("POST", "/files/upload", true);
+					xhr.onload = function () {
+						try {
+							// Parse the JSON response
+							const response = JSON.parse(xhr.responseText);
+							if (xhr.status !== 200) {
+								uploadStatus.innerText =
+									"ERROR: " + response.message;
+							} else {
+								uploadStatus.innerText =
+									response.message +
+									" File name: " +
+									response.uploaded_file_name;
+							}
+						} catch (e) {
+							console.error("Error parsing JSON:", e);
+						}
+					};
+
+					// Send the request with the FormData
+					xhr.send(formData);
+				});
+		</script>
+	</body>
+</html>
