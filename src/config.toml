@@ -1,0 +1,7 @@
+# The maximum size of a file that can be uploaded in Megabytes
+max_upload_size = 2
+frontend_path = './frontend'
+# Absolute path where the files uploaded need to be stored
+files_path = './'
+# Port to listen to
+port = 7445

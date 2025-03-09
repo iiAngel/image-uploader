@@ -19,7 +19,9 @@ type UploadFileResponse struct {
 	UploadedFileName string `json:"uploaded_file_name"`
 }
 
-var UploadedFiles []os.DirEntry
+var (
+	UploadedFiles []os.DirEntry
+)
 
 const charset = "abcdefghijklmnopqrstuvwxyz-ABCDEFGHIJKLMNOPQRSTUVWXYZ-0123456789"
 
@@ -74,6 +76,16 @@ func WriteUploadFileResponse(w http.ResponseWriter, response *UploadFileResponse
 
 func FilesUpload(w http.ResponseWriter, r *http.Request) {
 	maxUploadSize := int64(LoadedConfig.MaxUploadSize) * 1024 * 1024
+	clientIp := getClientIP(r)
+
+	if IsIPOnQueue(clientIp) {
+		WriteUploadFileResponse(w, &UploadFileResponse{
+			Message: "Please wait 5 seconds before uploading a file again!",
+		}, http.StatusBadRequest)
+		return
+	}
+
+	AddIPToQueue(clientIp, 5)
 
 	err := r.ParseMultipartForm(0)
 	if err != nil {
